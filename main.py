@@ -117,10 +117,14 @@ from fastapi import FastAPI, File, UploadFile, Form
 @app.post("/api/extract")
 async def extract(
     file: UploadFile = File(...),
-    grid_suppression: bool = Form(True),
-    wavelet_denoise: bool = Form(True),
+    grid_suppression: str = Form("true"),
+    wavelet_denoise: str = Form("true"),
     notch_filter: str = Form("50")
 ):
+    # Convert string boolean to actual bool
+    gs_bool = grid_suppression.lower() == "true"
+    wd_bool = wavelet_denoise.lower() == "true"
+
     contents = await file.read()
     nparr = np.frombuffer(contents, np.uint8)
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -129,8 +133,8 @@ async def extract(
                             content={"error": "Invalid image file."})
 
     config = {
-        "grid_suppression": grid_suppression,
-        "wavelet_denoise": wavelet_denoise,
+        "grid_suppression": gs_bool,
+        "wavelet_denoise": wd_bool,
         "notch_filter": notch_filter,
     }
 

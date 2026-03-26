@@ -62,8 +62,13 @@ document.addEventListener('DOMContentLoaded', () => {
         telemFilter.textContent = optNotch.value === 'None' ? 'OFF' : optNotch.value + 'Hz';
     });
 
-    /* ── Drag & Drop ─────────────────────────────────────── */
-    // dropzone is now a label linked to file-input, no manual click listener needed
+    // Panels (for nav toggling)
+    const filesPanel = document.getElementById('files-panel-section');
+    const inputPanel = document.getElementById('input-panel-section');
+    const settingsPanel = document.getElementById('settings-panel-section');
+
+    // Manually trigger file input (since we changed label to div)
+    dropzone.addEventListener('click', () => fileInput.click());
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e =>
         dropzone.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); }, false));
@@ -108,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ── Upload ──────────────────────────────────────────── */
     async function upload(file) {
+        console.log("DEBUG: Starting upload for", file.name);
         uploadSec.classList.add('hidden');
         mainImageDisplay.classList.add('hidden');
         loadSec.classList.remove('hidden');
@@ -119,19 +125,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const fd = new FormData();
         fd.append('file', file);
-        fd.append('grid_suppression', optGrid.checked);
-        fd.append('wavelet_denoise', optWavelet.checked);
+        // Ensure booleans are sent as strings 'true'/'false' (FastAPI-friendly)
+        fd.append('grid_suppression', optGrid.checked ? 'true' : 'false');
+        fd.append('wavelet_denoise', optWavelet.checked ? 'true' : 'false');
         fd.append('notch_filter', optNotch.value);
 
         try {
+            console.log("DEBUG: Sending POST to /api/extract");
             const res = await fetch('/api/extract', { method: 'POST', body: fd });
-            if (!res.ok) throw new Error((await res.json()).error || 'Failed to process image');
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || 'Failed to process image');
+            }
             const data = await res.json();
+            console.log("DEBUG: Upload success", data.status);
             stopPipe();
             setTimeout(() => render(data), 300);
         } catch (e) {
             stopPipe();
-            console.error(e);
+            console.error("DEBUG: Upload failed", e);
             alert('Error: ' + e.message);
             loadSec.classList.add('hidden');
             uploadSec.classList.remove('hidden');
@@ -389,11 +401,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    /* ── Icon sidebar nav highlights ─────────────────────── */
+    /* ── Icon sidebar nav highlights & switching ─────────── */
     document.querySelectorAll('.icon-btn[id^="nav-"]').forEach(btn => {
         btn.addEventListener('click', () => {
+            const id = btn.id;
+            console.log("DEBUG: Nav clicked", id);
+
+            // Toggle active state on buttons
             document.querySelectorAll('.icon-sidebar-top .icon-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+
+            // Toggle visibility of panels
+            // We'll hide all by default, then show the ones relevant to this tab
+            [filesPanel, inputPanel, settingsPanel, galleryPanel].forEach(p => {
+                if(p) p.classList.add('hidden');
+            });
+
+            if (id === 'nav-dashboard') {
+                // For now, show just input in dashboard
+                inputPanel.classList.remove('hidden');
+            } else if (id === 'nav-files') {
+                filesPanel.classList.remove('hidden');
+                inputPanel.classList.remove('hidden');
+            } else if (id === 'nav-process') {
+                settingsPanel.classList.remove('hidden');
+                // Only show gallery if data exists
+                if (currentImages) galleryPanel.classList.remove('hidden');
+            }
         });
     });
 

@@ -173,6 +173,11 @@ body {
 
 .panel-section {
     border-bottom: 1px solid var(--surface-border);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.panel-section.hidden {
+    display: none !important;
 }
 
 /* File Browser Tree */
@@ -237,8 +242,13 @@ body {
 
 .upload-box:hover {
     border-color: var(--cyan);
-    box-shadow: 0 0 15px rgba(0, 224, 208, 0.1);
-    background: rgba(0, 224, 208, 0.06);
+    box-shadow: 0 0 25px rgba(0, 224, 208, 0.2);
+    background: rgba(0, 224, 208, 0.1);
+    transform: translateY(-1px);
+}
+
+.upload-box:active {
+    transform: translateY(1px);
 }
 
 .upload-box i {
