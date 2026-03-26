@@ -1,0 +1,9 @@
+fastapi==0.111.0
+uvicorn==0.30.1
+python-multipart==0.0.9
+opencv-python-headless==4.10.0.84
+opencv-contrib-python-headless==4.10.0.84
+numpy==1.26.4
+scipy==1.13.1
+matplotlib==3.9.0
+PyWavelets==1.6.0

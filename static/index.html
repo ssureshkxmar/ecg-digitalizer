@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitalizer | Medical-Grade ECG Extraction</title>
+    <meta name="description"
+        content="Futuristic multi-layer ECG digitization with AI quality assessment, multi-strategy grid suppression, multi-model wave extraction, and clinical consistency validation.">
+    <link rel="stylesheet" href="/static/style.css?v=1.5">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- ── ICON SIDEBAR ───────────────────────────── -->
+    <nav class="icon-sidebar" id="icon-sidebar">
+        <div class="icon-sidebar-wrapper">
+            <div class="icon-sidebar-top">
+                <button class="icon-btn active" data-tooltip="Dashboard" id="nav-dashboard">
+                    <i class="fa-solid fa-atom"></i>
+                </button>
+                <button class="icon-btn" data-tooltip="File Browser" id="nav-files">
+                    <i class="fa-solid fa-folder-open"></i>
+                </button>
+                <button class="icon-btn" data-tooltip="Processing" id="nav-process">
+                    <i class="fa-solid fa-microchip"></i>
+                </button>
+                <div class="sidebar-sep"></div>
+                <button class="icon-btn tool-btn" data-tooltip="Navigation" id="nav-move">
+                    <i class="fa-solid fa-up-down-left-right"></i>
+                </button>
+                <button class="icon-btn" data-tooltip="Contrast" id="nav-contrast">
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                </button>
+                <button class="icon-btn" data-tooltip="Annotations" id="nav-annotations">
+                    <i class="fa-solid fa-ruler-combined"></i>
+                </button>
+                <div class="sidebar-sep"></div>
+                <button class="icon-btn" data-tooltip="Target" id="nav-target">
+                    <i class="fa-solid fa-crosshairs"></i>
+                </button>
+                <button class="icon-btn" data-tooltip="Optimization" id="nav-opt">
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                </button>
+            </div>
+            <div class="icon-sidebar-bottom">
+                <button class="icon-btn" data-tooltip="Export CSV" id="csv-btn">
+                    <i class="fa-solid fa-file-export"></i>
+                </button>
+                <button class="icon-btn" data-tooltip="Reset" id="reset-btn">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ── FILE BROWSER / SETTINGS PANEL ──────────── -->
+    <aside class="file-browser-panel" id="file-browser-panel">
+        <!-- File Browser Section -->
+        <div class="panel-section" id="files-panel-section">
+            <div class="panel-section-header">
+                <i class="fa-solid fa-folder-tree"></i> FILE BROWSER
+                <span class="file-count">1188 files</span>
+            </div>
+            <div class="folder-tree">
+                <div class="tree-node expanded">
+                    <i class="fa-solid fa-folder-open folder-icon folder-orange"></i>
+                    <span class="node-text">SCAN_DATA_001</span>
+                    <span class="node-count">1188</span>
+                </div>
+                <div class="tree-sub">
+                    <div class="tree-node child">
+                        <i class="fa-solid fa-folder folder-icon folder-grey"></i>
+                        <span class="node-text">PRE_CONTRAST</span>
+                        <span class="node-count">210</span>
+                    </div>
+                    <div class="tree-node child">
+                        <i class="fa-solid fa-folder folder-icon folder-grey"></i>
+                        <span class="node-text">POST_CONTRAST</span>
+                        <span class="node-count">160</span>
+                    </div>
+                    <div class="tree-node child active">
+                        <i class="fa-solid fa-folder folder-icon folder-cyan"></i>
+                        <span class="node-text">RHYTHM_STRIP</span>
+                        <span class="node-count">15</span>
+                    </div>
+                    <div class="tree-node child">
+                        <i class="fa-solid fa-folder folder-icon folder-grey"></i>
+                        <span class="node-text">LOCALIZER</span>
+                        <span class="node-count">12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-section-header">
+                <i class="fa-solid fa-cloud-arrow-up"></i> DATA INPUT
+            </div>
+            <div class="upload-area">
+                <input type="file" id="file-input" accept="image/*" style="display:none">
+                <label for="file-input" class="upload-box" id="dropzone">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Drop scan here or click</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="panel-section" id="settings-panel-section">
+            <div class="panel-section-header">
+                <i class="fa-solid fa-sliders"></i> PROCESSING OPTIONS
+            </div>
+            <div class="setting-row">
+                <div class="setting-info">
+                    <label>Grid Suppression</label>
+                    <span>Multi-strategy removal</span>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="opt-grid" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <div class="setting-info">
+                    <label>Wavelet Denoise</label>
+                    <span>Soft-thresholding filter</span>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="opt-wavelet" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-row column">
+                <div class="setting-info">
+                    <label>Notch Filter</label>
+                    <span>AC interference removal</span>
+                </div>
+                <div class="custom-select-wrapper">
+                    <select id="opt-notch" class="custom-select">
+                        <option value="50">50 Hz (EU/Asia)</option>
+                        <option value="60">60 Hz (US/Americas)</option>
+                        <option value="None">Disable Filter</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down select-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline Gallery Section (shown after results) -->
+        <div class="panel-section hidden" id="gallery-panel-section">
+            <div class="panel-section-header">
+                <i class="fa-solid fa-images"></i> PIPELINE GALLERY
+            </div>
+            <div class="gallery-file-list" id="gallery-tabs"></div>
+        </div>
+    </aside>
+
+    <!-- ── MAIN VIEWPORT ─────────────────────────────── -->
+    <main class="main-viewport">
+        <!-- Top Bar -->
+        <div class="viewport-topbar">
+            <div class="topbar-left">
+                <span class="view-label" id="main-view-label">DIGITALIZER</span>
+                <span class="view-sublabel" id="main-view-sublabel">10-Stage Architecture</span>
+            </div>
+            <div class="topbar-center" id="orientation-top"></div>
+            <div class="topbar-right">
+                <span class="topbar-time" id="topbar-time"></span>
+            </div>
+        </div>
+
+        <!-- Main Image Area -->
+        <div class="viewport-canvas-wrapper">
+            <!-- Upload Placeholder -->
+            <section id="upload-section" class="viewport-placeholder">
+                <div class="placeholder-inner">
+                    <div class="placeholder-pulse-container">
+                        <div class="placeholder-pulse-ring"></div>
+                        <div class="placeholder-pulse-ring delay"></div>
+                        <i class="fa-solid fa-heart-pulse placeholder-icon"></i>
+                    </div>
+                    <h2>Awaiting Medical Data</h2>
+                    <p>Upload an ECG scan to begin the 10-stage processing pipeline</p>
+                    <div class="placeholder-features">
+                        <div class="pf-item"><i class="fa-solid fa-brain"></i> AI Quality</div>
+                        <div class="pf-item"><i class="fa-solid fa-wave-square"></i> Signal Extraction</div>
+                        <div class="pf-item"><i class="fa-solid fa-stethoscope"></i> Clinical Analysis</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Section -->
+            <section id="loading-section" class="viewport-placeholder hidden">
+                <div class="placeholder-inner">
+                    <div class="loader-spinner"></div>
+                    <h2>Running Pipeline…</h2>
+                    <div class="pipeline-steps" id="pipeline-steps">
+                        <div class="step" data-step="1"><span>1</span> Quality AI</div>
+                        <div class="step" data-step="2"><span>2</span> Enhance</div>
+                        <div class="step" data-step="3"><span>3</span> Grid</div>
+                        <div class="step" data-step="4"><span>4</span> Extract</div>
+                        <div class="step" data-step="5"><span>5</span> Fusion</div>
+                        <div class="step" data-step="6"><span>6</span> Calibrate</div>
+                        <div class="step" data-step="7"><span>7</span> DSP</div>
+                        <div class="step" data-step="8"><span>8</span> Detect</div>
+                        <div class="step" data-step="9"><span>9</span> Validate</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Image Display (shown after results) -->
+            <div id="main-image-display" class="main-image-display hidden">
+                <img id="gallery-image" src="" alt="Pipeline stage">
+                <!-- Crosshair overlay -->
+                <div class="crosshair-h"></div>
+                <div class="crosshair-v"></div>
+                <!-- Orientation markers -->
+                <div class="orient-marker orient-top">A</div>
+                <div class="orient-marker orient-bottom">P</div>
+                <div class="orient-marker orient-left">R</div>
+                <div class="orient-marker orient-right">L</div>
+            </div>
+        </div>
+
+        <!-- Bottom Thumbnails -->
+        <div class="viewport-thumbnails" id="viewport-thumbnails">
+            <div class="thumb-card active" id="thumb-signal" data-view="signal">
+                <div class="thumb-label">SIGNAL</div>
+                <div class="thumb-letter">S</div>
+                <div class="thumb-img-wrap">
+                    <img id="signal-plot" src="" alt="Signal">
+                </div>
+            </div>
+            <div class="thumb-card" id="thumb-annotated" data-view="annotated">
+                <div class="thumb-label">ANNOTATED</div>
+                <div class="thumb-letter">A</div>
+                <div class="thumb-img-wrap">
+                    <img id="annotated-image" src="" alt="Annotated">
+                </div>
+            </div>
+            <div class="thumb-card" id="thumb-confidence" data-view="confidence">
+                <div class="thumb-label">CONFIDENCE</div>
+                <div class="thumb-letter">C</div>
+                <div class="thumb-img-wrap">
+                    <img id="confidence-image" src="" alt="Confidence">
+                </div>
+            </div>
+            <div class="thumb-card" id="thumb-overlay" data-view="overlay">
+                <div class="thumb-label">OVERLAY</div>
+                <div class="thumb-letter">O</div>
+                <div class="thumb-img-wrap">
+                    <img id="overlay-image" src="" alt="Overlay">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ── RIGHT TELEMETRY PANEL ─────────────────────── -->
+    <aside class="telemetry-panel" id="telemetry-panel">
+        <!-- System Telemetry -->
+        <div class="telem-section">
+            <div class="telem-header">
+                <i class="fa-solid fa-signal"></i> SYSTEM TELEMETRY
+                <div class="telem-signal-bars">
+                    <span class="bar b1"></span>
+                    <span class="bar b2"></span>
+                    <span class="bar b3"></span>
+                    <span class="bar b4"></span>
+                </div>
+            </div>
+            <div class="telem-grid" id="telem-info">
+                <div class="telem-row"><span class="telem-label">STATUS</span><span class="telem-value status-value" id="telem-status">IDLE</span></div>
+                <div class="telem-row"><span class="telem-label">QUALITY</span><span class="telem-value" id="telem-quality">—</span></div>
+                <div class="telem-row"><span class="telem-label">GRADE</span><span class="telem-value" id="telem-grade">—</span></div>
+                <div class="telem-row"><span class="telem-label">SCORE</span><span class="telem-value" id="telem-score">—</span></div>
+                <div class="telem-row"><span class="telem-label">PIPELINE</span><span class="telem-value" id="telem-pipeline">10-STAGE</span></div>
+                <div class="telem-row"><span class="telem-label">GRID</span><span class="telem-value" id="telem-grid">ENABLED</span></div>
+                <div class="telem-row"><span class="telem-label">FILTER</span><span class="telem-value" id="telem-filter">50Hz</span></div>
+            </div>
+        </div>
+
+        <!-- Clinical Metrics -->
+        <div class="telem-section">
+            <div class="telem-header">
+                <i class="fa-solid fa-stethoscope"></i> CLINICAL METRICS
+            </div>
+            <div class="clinical-list" id="clinical-list">
+                <div class="clinical-item">
+                    <div class="clinical-dot dot-cyan"></div>
+                    <span class="clinical-name">Heart Rate</span>
+                    <span class="clinical-val" id="clin-hr">—</span>
+                </div>
+                <div class="clinical-item">
+                    <div class="clinical-dot dot-green"></div>
+                    <span class="clinical-name">Beats Found</span>
+                    <span class="clinical-val" id="clin-beats">—</span>
+                </div>
+                <div class="clinical-item">
+                    <div class="clinical-dot dot-orange"></div>
+                    <span class="clinical-name">PR Interval</span>
+                    <span class="clinical-val" id="clin-pr">—</span>
+                </div>
+                <div class="clinical-item">
+                    <div class="clinical-dot dot-purple"></div>
+                    <span class="clinical-name">QRS Duration</span>
+                    <span class="clinical-val" id="clin-qrs">—</span>
+                </div>
+                <div class="clinical-item">
+                    <div class="clinical-dot dot-red"></div>
+                    <span class="clinical-name">QT Interval</span>
+                    <span class="clinical-val" id="clin-qt">—</span>
+                </div>
+                <div class="clinical-item">
+                    <div class="clinical-dot dot-gold"></div>
+                    <span class="clinical-name">QTc (Bazett)</span>
+                    <span class="clinical-val" id="clin-qtc">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quality Meters -->
+        <div class="telem-section">
+            <div class="telem-header">
+                <i class="fa-solid fa-brain"></i> QUALITY ANALYSIS
+            </div>
+            <div class="quality-bars" id="quality-bars"></div>
+        </div>
+
+        <!-- Warnings -->
+        <div class="telem-section">
+            <div class="telem-header">
+                <i class="fa-solid fa-triangle-exclamation"></i> WARNINGS & FLAGS
+            </div>
+            <div class="warnings-list" id="flags-list">
+                <div class="warning-item ok">
+                    <i class="fa-solid fa-circle-check"></i> No data loaded
+                </div>
+            </div>
+        </div>
+
+        <!-- Extraction Stats  -->
+        <div class="telem-section">
+            <div class="telem-header">
+                <i class="fa-solid fa-layer-group"></i> EXTRACTION STATS
+            </div>
+            <div class="extraction-stats" id="extraction-info"></div>
+        </div>
+    </aside>
+
+    <!-- ── STATUS BAR ────────────────────────────────── -->
+    <footer class="status-bar" id="status-bar">
+        <div class="status-left">
+            <span class="status-dot online"></span>
+            <span class="status-text">DIGITALIZER ONLINE</span>
+            <span class="status-id" id="status-file">NO FILE</span>
+        </div>
+        <div class="status-center" id="status-message">Ready</div>
+        <div class="status-right">
+            <span id="status-stage">STAGE: IDLE</span>
+            <span class="status-sep">|</span>
+            <span id="status-time-display"></span>
+        </div>
+    </footer>
+
+    <script src="/static/app.js?v=1.5"></script>
+</body>
+
+</html>

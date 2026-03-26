@@ -1,0 +1,16 @@
+venv/
+__pycache__/
+*.log
+.env
+static/uploads/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+bin/
+lib/
+include/
+local/
+share/
+pip-selfcheck.json
